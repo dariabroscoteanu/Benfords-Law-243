@@ -1,213 +1,206 @@
+# Marton Alexandru-Sergiu, Gherghescu Andreea Diana, Broscoteanu Daria-Mihaela
+# Grupa 243
+# Proiect — Legea lui Benford
 
-#Marton Sergiu & Gherghescu Andreea & Broscoteanu Daria
-#Grupa 243
-#Proiect - Legea lui Benford 
+library("shiny")
+library("ggplot2")
+library("plot.matrix")
+library("ggpubr")
 
-
-library(shiny)
-library(ggplot2)
-library('plot.matrix')
-library(ggpubr)
 
 ui <- fluidPage(
-  titlePanel("Benford's Law"),
-  helpText("Project by Marton Sergiu, Gherghescu Andreea, Broscoteanu Daria - Grupa 243"),
-  navbarPage("Benford App",
-             #experiment 1
-             tabPanel("US Births and Deaths 2020 - 2021",
-                      sidebarLayout(      
-                        sidebarPanel(
-                          #input conditional pentru datele oficiale
-                          radioButtons("column2", "Pick domain:",
-                                      choiceNames = c('Births 2020', 'Births 2021', 'Deaths 2020', 'Deaths 2021'),
-                                      choiceValues = c('BIRTHS2020', 'BIRTHS2021', 'DEATHS2020', 'DEATHS2021')
-                          ),
-                          sliderInput("n2", "Marime de referinta", min = 0, max =60, value = 20),
-                          
-                          hr(),
-                          helpText("Sursa date:"),
-                          tags$a(href="https://www.kaggle.com/datasnaek/youtube-new?select=CAvideos.csv", "Kaggle.com-Trending YouTube Video Statistics (2019)")
-                        ),
-                        mainPanel(
-                          #creare tab-uri
-                          tabsetPanel(
-                            tabPanel("Grafic", plotOutput("date2")), 
-                            tabPanel("Vizualizare date tabel", DT::dataTableOutput("mytable2") )
-                          )
-                        )
-                      )
-             ),
-             tabPanel("Pokemon",
-                      sidebarLayout(      
-                        sidebarPanel(
-                          #selectInput("type", "Pick data type:", 
-                                      #choices=c('Pokemon')),
-                          #input conditional pentru datele oficiale
-                          
-                           radioButtons("column3", "Pick domain:",
-                                        choiceNames = c('HP', 'Attack', 'Defense', 'Speed'),
-                                        choiceValues = c('HP', 'Attack', 'Defense', 'Speed')
-                                        ),
-                            
-                          sliderInput("n3", "Marime de referinta", min = 0, max = 1000, value = 200),
-                          
-                          hr(),
-                          helpText("Sursa date:"),
-                          tags$a(href="https://www.kaggle.com/datasnaek/youtube-new?select=CAvideos.csv", "Kaggle.com-Trending YouTube Video Statistics (2019)")
-                        ),
-                        mainPanel(
-                          #creare tab-uri
-                          tabsetPanel(
-                            tabPanel("Grafic", plotOutput("date3")), 
-                            tabPanel("Vizualizare date tabel", DT::dataTableOutput("mytable3") )
-                          )
-                        )
-                      )
-             ),
-             
-             tabPanel("US Population",
-                      #h2("Legea lui Benford"),
-                      #uiOutput('formula'),
-                      #h4("Experimentul YouTube (Date de referinta Canada 2019)"),
-                      #textOutput("text1"),
-                      #textOutput("text2"),
-                      
-                      sidebarLayout(      
-                        sidebarPanel(
-                          
-                          #input conditional pentru datele oficiale
-                          
-                          radioButtons("column", "Pick domain:",
-                                       choiceNames = c('Population 2010', 'Population 2011', 'Population 2012', 'Population 2013', 'Population 2014', 'Population 2015', 'Population 2016', 'Population 2017', 'Population 2018', 'Population 2019'),
-                                       choiceValues = c('ESTIMATESBASE2010', 'ESTIMATESBASE2011', 'ESTIMATESBASE2012', 'ESTIMATESBASE2013', 'ESTIMATESBASE2014', 'ESTIMATESBASE2015', 'ESTIMATESBASE2016', 'ESTIMATESBASE2017', 'ESTIMATESBASE2018', 'ESTIMATESBASE2019')
-                                       ),
-                          sliderInput("n", "Marime de referinta", min = 0, max =5000, value = 2000),
-                          
-                          hr(),
-                          helpText("Sursa date:"),
-                          tags$a(href="https://www.kaggle.com/datasnaek/youtube-new?select=CAvideos.csv", "Kaggle.com-Trending YouTube Video Statistics (2019)")
-                        ),
-                        
-                        #afisare grafic / tabel cu date
-                        mainPanel(
-                          #creare tab-uri
-                          tabsetPanel(
-                            tabPanel("Grafic", plotOutput("date")), 
-                            tabPanel("Vizualizare date tabel", DT::dataTableOutput("mytable1") )
-                          )
-                        )
-                        
-                      ),
-             ),
-             tabPanel("Dogs Names",
-                      sidebarLayout(      
-                        sidebarPanel(
-                          #input conditional pentru datele oficiale
-                          
-                          radioButtons("column4", "Pick domain:",
-                                      choiceNames = c('Count'),
-                                      choiceValues = c('Count')
-                          ),
-                          sliderInput("n4", "Marime de referinta", min = 0, max =16000, value = 1000),
-                          
-                          hr(),
-                          helpText("Sursa date:"),
-                          tags$a(href="https://www.kaggle.com/datasnaek/youtube-new?select=CAvideos.csv", "Kaggle.com-Trending YouTube Video Statistics (2019)")
-                        ),
-                        mainPanel(
-                          #creare tab-uri
-                          tabsetPanel(
-                            tabPanel("Grafic", plotOutput("date4")), 
-                            tabPanel("Vizualizare date tabel", DT::dataTableOutput("mytable4") )
-                          )
-                        )
-                        )
-              ),
-            
-             tabPanel("Utilizari ale Legii lui Benford",
-                      h3("Analiza vanzarilor din supermarket (2019)"),
-                      textOutput("text3"),
-                      textOutput("text4"),
-                      
-                      
-                      fluidRow(
-                        column(4,
-                               h4("Rating"),
-                               helpText("Cauza: limitare interval"),
-                               plotOutput("grafic1")
-                               
-                        ),
-                        column(4, 
-                               h4("Cantitate"),
-                               helpText("Cauza: nu creste exponential"),
-                               plotOutput("grafic2")
-                               
-                        ),
-                        column(4,
-                               h4("ID Factura"),
-                               helpText("Cauza: numere unice"),
-                               plotOutput("grafic3")
-                               
-                        )
-                      )
-             ),
-             
+  tags$head(
+    tags$link(rel = "stylesheet", type = "text/css", href = "styles.css")
   ),
+  titlePanel("Legea lui Benford"),
+  helpText(
+    "Proiect realizat de Marton Alexandru-Sergiu, Gherghescu Andreea Diana, Broscoteanu Daria-Mihaela — Grupa 243"
+  ),
+  navbarPage(
+    "Meniu",
+    tabPanel(
+      "Introducere",
+      tags$h2("Legea lui Benford"),
+      tags$p(
+        paste("Legea lui Benford, numită și Legea Primei Cifre, cuprinde ",
+              "observații cu privire la frecvența primei cifre a unor seturi ",
+              "de date din realitate. Legea atestă faptul că în majoritatea ",
+              "colecțiilor alcătuite într-un mod natural, cifra aflată pe ",
+              "prima poziție are tendința să fie o cifră mai mică. În seturile ",
+              "care respectă această lege, s-a observat faptul că vom avea ",
+              "cifra 1 pe prima poziție în aproximativ 30% din cazuri, iar ",
+              "cifra 9 în mai puțin de 5% din cazuri. Dacă cifrele ar fi ",
+              "distribuite într-o manieră uniformă, fiecare dintre aceste ",
+              "cifre ar apărea pe prima poziție în 11,1% din cazuri. Legea ",
+              "lui Benford este folosită și pentru prezicerea distribuției ",
+              "celei de-a doua cifră, cât și pentru prezicerea unor ",
+              "combinații de cifre. Respectarea predicției acestei legi a ",
+              "fost observată atât în cazul trecerii prin toate valorile ale ",
+              "numărului de locuitori ai unei țări, cât și în cazul șirului ",
+              "lui Fibonacci și șirul puterilor lui 2.")
+      ),
+      tags$p(
+        paste(
+          "În jurul anului 1938, fizicianul Frank Benford a observat faptul ",
+          "ca tabelele logaritmice erau mai uzate în primele pagini față de ",
+          "ultimele. Acesta a testat ipoteza care susținea că cifrele mai mici ",
+          "au o frecvență de apariție mai mare decât cifrele mai mari pe 30 de ",
+          "seturi de date, obținând astfel legea. Folosindu-ne de Legea lui ",
+          "Benford putem face o predicție cu privire la distribuția cifrelor ",
+          "de la 1 la 9 la nivelul unui set de date. Probabilitatea apariției ",
+          "este generata astfel de această formulă:"
+        )
+      ),
+      withMathJax(
+        tags$p("$$P(D = d)=lg(1+\\frac{1}{d})\\ , unde \\ d\\in\\{1..9\\}$$")
+      )
+    ),
+    tabPanel("Populația SUA",
+             sidebarLayout(
+               sidebarPanel(
+                 radioButtons(
+                   "column1",
+                   "Alege domeniu:",
+                   choiceNames = sapply(2010:2019, function(x) { paste("Populație", x) }),
+                   choiceValues = sapply(2010:2019, function(x) { paste("POPESTIMATE", x, sep="") })
+                 ),
+                 sliderInput(
+                   "n1",
+                   "Mărime de referință",
+                   min = 0,
+                   max = 3193,
+                   value = 2000
+                 ),
+                 
+                 hr(),
+                 helpText("Sursă date:"),
+                 tags$a(href = "https://www2.census.gov/programs-surveys/popest/datasets/", "US Census Bureau")
+               ),
+               mainPanel(tabsetPanel(
+                 tabPanel("Grafic", plotOutput("date1")),
+                 tabPanel("Vizualizare date tabel", DT::dataTableOutput("mytable1"))
+               ))
+             )),
+    tabPanel(
+      "Nașteri și decese din SUA 2020–2021",
+      sidebarLayout(
+        sidebarPanel(
+          radioButtons(
+            "column2",
+            "Alege domeniu:",
+            choiceNames = c('Nașteri 2020', 'Nașteri 2021', 'Morți 2020', 'Morți 2021'),
+            choiceValues = c('BIRTHS2020', 'BIRTHS2021', 'DEATHS2020', 'DEATHS2021')
+          ),
+          sliderInput(
+            "n2",
+            "Mărime de referință",
+            min = 0,
+            max = 57,
+            value = 20
+          ),
+          hr(),
+          helpText("Sursă date:"),
+          tags$a(href = "https://www2.census.gov/programs-surveys/popest/datasets/", "US Census Bureau")
+        ),
+        mainPanel(tabsetPanel(
+          tabPanel("Grafic", plotOutput("date2")),
+          tabPanel("Vizualizare date tabel", DT::dataTableOutput("mytable2"))
+        ))
+      )
+    ),
+    tabPanel("Pokemon",
+             sidebarLayout(
+               sidebarPanel(
+                 radioButtons(
+                   "column3",
+                   "Alege domeniu:",
+                   choiceNames = c('HP', 'Atac', 'Apărare', 'Viteză'),
+                   choiceValues = c('HP', 'Attack', 'Defense', 'Speed')
+                 ),
+                 sliderInput(
+                   "n3",
+                   "Mărime de referință",
+                   min = 0,
+                   max = 799,
+                   value = 200
+                 ),
+                 hr(),
+                 helpText("Sursă date:"),
+                 tags$a(href = "https://www.kaggle.com/abcsds/pokemon", "kaggle - Pokemon with stats")
+               ),
+               mainPanel(tabsetPanel(
+                 tabPanel("Grafic", plotOutput("date3")),
+                 tabPanel("Vizualizare date tabel", DT::dataTableOutput("mytable3"))
+               ))
+             )),
+    tabPanel("Nume de câini",
+             sidebarLayout(
+               sidebarPanel(
+                 radioButtons(
+                   "column4",
+                   "Alege domeniu:",
+                   choiceNames = c('Număr apariții'),
+                   choiceValues = c('Count')
+                 ),
+                 sliderInput(
+                   "n4",
+                   "Mărime de referință",
+                   min = 0,
+                   max = 16000,
+                   value = 1000
+                 ),
+                 
+                 hr(),
+                 helpText("Sursă date:"),
+                 tags$a(href = "https://www.kaggle.com/yamqwe/dog-names-over-timee", "kaggle - Dog Names over Time")
+               ),
+               mainPanel(tabsetPanel(
+                 tabPanel("Grafic", plotOutput("date4")),
+                 tabPanel("Vizualizare date tabel", DT::dataTableOutput("mytable4"))
+               ))
+             )),
+    tabPanel(
+      "Secvența Fibonacci",
+      sidebarLayout(
+        sidebarPanel(
+          radioButtons(
+            "column5",
+            "Alege domeniu:",
+            choiceNames = c("Valoare"),
+            choiceValues = c("Value")
+          ),
+          sliderInput(
+            "n5",
+            "Mărime de referință",
+            min = 0,
+            max = 1477,
+            value = 100
+          ),
+          hr(),
+          helpText("Sursă date:"),
+          tags$a(href = "https://www.kaggle.com/brandonconrady/fibonacci-sequence-first-10001-numbers", "kaggle - Fibonacci Sequence")
+        ),
+        mainPanel(tabsetPanel(
+          tabPanel("Grafic", plotOutput("date5")),
+          tabPanel("Vizualizare date tabel", DT::dataTableOutput("mytable5"))
+        ))
+      )
+    )
+  )
 )
 
-#################################################################################
-#
-# Server function
-#
-server <- function(session,input,output) {
-  #zona de text
-  output$text1<-renderText({
-    "Este cunoscut faptul ca numarul vizualizarilor
-    video-urilor de pe YouTube respecta ipotezele de examinare a datelor de catre lege:
-    sa fie numere generate aleator, predispuse cresterii exponentiale, nerestrictionate de maxime sau minime, iar 
-    calculele sa aiba loc pe esantioane mari de date.
-    "
-  })
-  output$text2<-renderText({
-    "
-    Se poate observa cum de la primele 1500 de vizualizari procentele se aproprie
-    de respectarea legii. Tabelul cu date neoficiale contine date modificate manual, neconforme cu 
-    realitatea care demonstreaza faptul ca Legea lui Benford poate sa semnaleze in anumite cazuri frauda.
-    
-    "
-  })
-  output$text3<-renderText({
-    "
-    Setul de date reprezinta vanzarile unei companii de 
-    supermarketuri din Myanmar care a inregistrat timp de 3 luni,
-    date din fiecare oras din tara. 
-    "
-  })
-  output$text4<-renderText({
-    "
-    Se poate observa ca Legea lui Benford nu este aplicabila pe anumite tipuri de date.
-    "
-  })
-  output$formula <- renderUI({
-    withMathJax(
-      #afisare formula legea lui Benford
-      helpText('$$P(d)=lg (d+1) -lg(d)=lg(\\frac{d+1}{d})=lg(1+\\frac {1}{d}), d\\in\\{1..9\\}$$')
-    )
-  })
-  
-  
-  #functie care genereaza graficul legii lui Benford pentru un set de date
+
+server <- function(session, input, output) {
   Benfords_law <- function(rate, number_of_lines)
   {
-  
-    firstDigit <- function(element){
-      element = gsub('[0.]', '', element)
-       as.numeric(substr(element, 1, 1))
+    firstDigit <- function(element) {
+      element <- gsub('[0.]', '', element)
+      as.numeric(substr(element, 1, 1))
     }
     
-    secondDigit <- function(element){
-      element2 = gsub('[0.]', '', element)
-       as.numeric(substr(element, 2, 2))
+    secondDigit <- function(element) {
+      element <- gsub('[0.]', '', element)
+      as.numeric(substr(element, 2, 2))
     }
     
     frequencies <- c (0, 0, 0, 0, 0, 0, 0, 0, 0)
@@ -219,174 +212,91 @@ server <- function(session,input,output) {
     benford <- c (0, 0, 0, 0, 0, 0, 0, 0, 0)
     benford2 <- matrix (, 9, 10)
     
-    for (i in 1: number_of_lines){
-      first_digit = firstDigit(rate[i])
-      second_digit = secondDigit(rate[i])
+    for (i in 1:number_of_lines) {
+      first_digit <- firstDigit(rate[i])
+      second_digit <- secondDigit(rate[i])
       frequencies[first_digit] <- frequencies[first_digit] + 1
-      frequencies2[first_digit, second_digit + 1] <- frequencies2[first_digit, second_digit + 1] + 1
+      frequencies2[first_digit, second_digit + 1] <-
+        frequencies2[first_digit, second_digit + 1] + 1
       total_frequencies2 <- total_frequencies2 + 1
       total_frequencies <- total_frequencies + 1
     }
     # Pentru frequencies2, a 2 a cifra o retinem ca second_digit + 1, deoarece putem sa avem si 0
     # Deci pentru o a 2 a cifra i, noi ii tinem minte valorile in i + 1.
     
-    for (i in 1:9){
+    for (i in 1:9) {
       # For only 1 digit
-      procents[i] <- frequencies[i]/total_frequencies
+      procents[i] <- frequencies[i] / total_frequencies
       
       # For 2 digits
-      for (j in 1:10){
-        procents2[i,j] = frequencies2[i,j]/total_frequencies2
+      for (j in 1:10) {
+        procents2[i, j] <- frequencies2[i, j] / total_frequencies2
       }
     }
     
-    for (i in 1:9){
+    for (i in 1:9) {
       # For only 1 digit
-      benford[i] <- log10(1 + 1/i)
+      benford[i] <- log10(1 + 1 / i)
       
       # For 2 digits
-      for(j in 1:10){
-        benford2[i,j] = log10(1 + 1/(i * 10 + (j - 1)))
+      for (j in 1:10) {
+        benford2[i, j] = log10(1 + 1 / (i * 10 + (j - 1)))
       }
     }
     
-    
-    frame3<-data.frame(
-      numere=c("1","2", "3", "4", "5", "6", "7", "8", "9"),
-      ben=benford,
-      procente=procents
+    frame3 <- data.frame(
+      Cifre = c("1", "2", "3", "4", "5", "6", "7", "8", "9"),
+      ben = benford,
+      Procente = procents
     )
     
     numbers <- c()
-    for (i in 1:9){
-      for(j in 1:10){
+    for (i in 1:9) {
+      for (j in 1:10) {
         x <- as.character(i)
         y <- as.character(j - 1)
-        val <- paste(x, y, sep="")
+        val <- paste(x, y, sep = "")
         numbers <- append(numbers, val)
       }
     }
-    frame4 <- data.frame(
-      perechi=numbers,
-      ben2=c(t(benford2)),
-      procente2=c(t(procents2))
-    )
-    #generare grafic
-    p1 <- ggplot(data = frame3, aes(x = numere, group = 1))+ geom_bar(aes(y = procente), stat = "identity", color=NA, fill="yellow") + geom_line(aes(y = ben), stat = "identity", color="red")
-    p2 <- ggplot(data = frame4, aes(x = perechi, group = 1))+ geom_bar(aes(y = procente2), stat = "identity", color=NA, fill="yellow") + geom_line(aes(y = ben2), stat = "identity", color="red")
+
+    frame4 <- data.frame(Perechi = numbers,
+                         ben2 = c(t(benford2)),
+                         Procente = c(t(procents2)))
+    
+    # Draw plots
+    p1 <-
+      ggplot(data = frame3, aes(x = Cifre, group = 1)) + geom_bar(aes(y = Procente),
+                                                                   stat = "identity",
+                                                                   color = NA,
+                                                                   fill = "yellow") + geom_line(aes(y = ben), stat = "identity", color = "red")
+    p2 <-
+      ggplot(data = frame4, aes(x = Perechi, group = 1)) + geom_bar(
+        aes(y = Procente),
+        stat = "identity",
+        color = NA,
+        fill = "yellow"
+      ) + geom_line(aes(y = ben2), stat = "identity", color = "red")
     ggarrange(p1, p2, nrow = 2)
-    #Creezi 2 plot-uri si le aranjezi pe 2 coloane, aka unul sub altul
-    #generare grafic
   }
   
+  renderDataset <- function(index, csvFile) {
+    output[[paste("date", index, sep="")]] <- renderPlot({
+      data <- read.csv(csvFile, header = TRUE)
+      output[[paste("mytable", index, sep="")]] <- DT::renderDataTable(data)
+      
+      rate <- data[[input[[paste("column", index, sep="")]]]]
+      rows <- input[[paste("n", index, sep="")]]
+      
+      Benfords_law(rate, rows)
+    })
+  }
   
-  output$date <- renderPlot({
-    
-    #citire din fisierul dat ca input din dropdown
-    #nume_csv<-paste("USpopulation.csv")
-    data1<-(read.csv("USpopulation.csv", header=TRUE))
-    
-    
-    #afisare tabel cu date
-
-    output$mytable1 = DT::renderDataTable(data1)
-    
-   
-    #incheiere afisare tabel cu date
-    
-    #extrag numele coloanei acolo unde al doilea dropdown a fost activ
-    nume_coloana<-input$column
-    if (nume_coloana == 'Population 2010')
-      rate<-data1$POPESTIMATE2010
-    else if (nume_coloana == 'Population 2011')
-      rate<-data1$POPESTIMATE2011
-    else if (nume_coloana == 'Population 2012')
-      rate<-data1$POPESTIMATE2012
-    else if (nume_coloana == 'Population 2013')
-      rate<-data1$POPESTIMATE2013
-    else if (nume_coloana == 'Population 2014')
-      rate<-data1$POPESTIMATE2014
-    else if (nume_coloana == 'Population 2015')
-      rate<-data1$POPESTIMATE2015
-    else if (nume_coloana == 'Population 2016')
-      rate<-data1$POPESTIMATE2016
-    else if (nume_coloana == 'Population 2017')
-      rate<-data1$POPESTIMATE2017
-    else if (nume_coloana == 'Population 2018')
-      rate<-data1$POPESTIMATE2018
-    else
-      rate<-data1$POPESTIMATE2019
-    
-    
-    #aplic legea lui Benford pt n date de Slidebar
-    
-    #lucrez doar pe coloana Views
-    linii_coloana<-input$n
-    
-    Benfords_law(rate, linii_coloana)
-    
-    
-  })
-  #grafice
-  output$date4 <- renderPlot({
-    data4<-(read.csv("DogsName.csv", header=TRUE))
-    
-    
-    #afisare tabel cu date
-    
-    output$mytable4 = DT::renderDataTable(data4)
-    
-    rate<-data4$Count
-    
-    #lucrez doar pe coloana Views
-    linii_coloana<-input$n4
-    
-    Benfords_law(rate, linii_coloana)
-  })
-  
-  output$date3 <- renderPlot({
-    data3<-(read.csv("Pokemon.csv", header=TRUE))
-    
-    
-    #afisare tabel cu date
-    
-    output$mytable3 = DT::renderDataTable(data3)
-    
-    nume_coloana<-input$column3
-    if (nume_coloana == 'HP')
-      rate<-data3$HP
-    else if (nume_coloana == 'Attack')
-      rate<-data3$Attack
-    else if (nume_coloana == 'Defense')
-      rate<-data3$Defense
-    else
-      rate<-data3$Speed
-    
-    #lucrez doar pe coloana Views
-    linii_coloana<-input$n3
-    
-    Benfords_law(rate, linii_coloana)
-  })
-  output$date2 <- renderPlot({
-    data2 <- (read.csv("DB.csv", header=TRUE))
-    
-    output$mytable2 = DT::renderDataTable(data2)
-    
-    nume_coloana<-input$column2
-    if (nume_coloana == 'Births 2020')
-      rate<-data2$BIRTHS2020
-    else if (nume_coloana == 'Births 2021')
-      rate<-data2$BIRTHS2021
-    else if (nume_coloana == 'Deaths 2020')
-      rate<-data2$DEATHS2020
-    else
-      rate<-data2$DEATHS2021
-    
-    linii_coloana<-input$n2
-    
-    Benfords_law(rate, linii_coloana)
-  })
-
-  
+  renderDataset(1, "USpopulation.csv")
+  renderDataset(2, "DB.csv")
+  renderDataset(3, "Pokemon.csv")
+  renderDataset(4, "DogsName.csv")
+  renderDataset(5, "fibonacci_sequence.csv")
 }
+
 shinyApp(ui = ui, server = server)
