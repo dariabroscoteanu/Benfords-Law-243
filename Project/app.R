@@ -41,7 +41,7 @@ ui <- fluidPage(
       ),
       tags$p(
         paste(
-          "În jurul anului 1938, fizicianul **Frank Benford** a observat faptul ",
+          "În jurul anului 1938, fizicianul Frank Benford a observat faptul ",
           "ca tabelele logaritmice erau mai uzate în primele pagini față de ",
           "ultimele. Acesta a testat ipoteza care susținea că cifrele mai mici ",
           "au o frecvență de apariție mai mare decât cifrele mai mari pe 30 de ",
@@ -74,7 +74,7 @@ ui <- fluidPage(
                  
                  hr(),
                  helpText("Sursă date:"),
-                 tags$a(href = "https://www.kaggle.com/datasnaek/youtube-new?select=CAvideos.csv", "Kaggle.com-Trending YouTube Video Statistics (2019)")
+                 tags$a(href = "https://www2.census.gov/programs-surveys/popest/datasets/", "US Census Bureau")
                ),
                mainPanel(tabsetPanel(
                  tabPanel("Grafic", plotOutput("date1")),
@@ -100,7 +100,7 @@ ui <- fluidPage(
           ),
           hr(),
           helpText("Sursă date:"),
-          tags$a(href = "https://www.kaggle.com/datasnaek/youtube-new?select=CAvideos.csv", "Kaggle.com-Trending YouTube Video Statistics (2019)")
+          tags$a(href = "https://www2.census.gov/programs-surveys/popest/datasets/", "US Census Bureau")
         ),
         mainPanel(tabsetPanel(
           tabPanel("Grafic", plotOutput("date2")),
@@ -182,13 +182,12 @@ ui <- fluidPage(
         ),
         mainPanel(tabsetPanel(
           tabPanel("Grafic", plotOutput("date5")),
-          tabPanel("Vizualizare date table", DT::dataTableOutput("mytable5"))
+          tabPanel("Vizualizare date tabel", DT::dataTableOutput("mytable5"))
         ))
       )
     )
   )
 )
-
 
 
 server <- function(session, input, output) {
@@ -246,9 +245,9 @@ server <- function(session, input, output) {
     }
     
     frame3 <- data.frame(
-      numere = c("1", "2", "3", "4", "5", "6", "7", "8", "9"),
+      Cifre = c("1", "2", "3", "4", "5", "6", "7", "8", "9"),
       ben = benford,
-      procente = procents
+      Procente = procents
     )
     
     numbers <- c()
@@ -261,19 +260,19 @@ server <- function(session, input, output) {
       }
     }
 
-    frame4 <- data.frame(perechi = numbers,
+    frame4 <- data.frame(Perechi = numbers,
                          ben2 = c(t(benford2)),
-                         procente = c(t(procents2)))
+                         Procente = c(t(procents2)))
     
     # Draw plots
     p1 <-
-      ggplot(data = frame3, aes(x = numere, group = 1)) + geom_bar(aes(y = procente),
+      ggplot(data = frame3, aes(x = Cifre, group = 1)) + geom_bar(aes(y = Procente),
                                                                    stat = "identity",
                                                                    color = NA,
                                                                    fill = "yellow") + geom_line(aes(y = ben), stat = "identity", color = "red")
     p2 <-
-      ggplot(data = frame4, aes(x = perechi, group = 1)) + geom_bar(
-        aes(y = procente),
+      ggplot(data = frame4, aes(x = Perechi, group = 1)) + geom_bar(
+        aes(y = Procente),
         stat = "identity",
         color = NA,
         fill = "yellow"
