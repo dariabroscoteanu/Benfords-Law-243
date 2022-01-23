@@ -18,6 +18,43 @@ ui <- fluidPage(
   ),
   navbarPage(
     "Meniu",
+    tabPanel(
+      "Introducere",
+      tags$h2("Legea lui Benford"),
+      tags$p(
+        paste("Legea lui Benford, numită și Legea Primei Cifre, cuprinde ",
+              "observații cu privire la frecvența primei cifre a unor seturi ",
+              "de date din realitate. Legea atestă faptul că în majoritatea ",
+              "colecțiilor alcătuite într-un mod natural, cifra aflată pe ",
+              "prima poziție are tendința să fie o cifră mai mică. În seturile ",
+              "care respectă această lege, s-a observat faptul că vom avea ",
+              "cifra 1 pe prima poziție în aproximativ 30% din cazuri, iar ",
+              "cifra 9 în mai puțin de 5% din cazuri. Dacă cifrele ar fi ",
+              "distribuite într-o manieră uniformă, fiecare dintre aceste ",
+              "cifre ar apărea pe prima poziție în 11,1% din cazuri. Legea ",
+              "lui Benford este folosită și pentru prezicerea distribuției ",
+              "celei de-a doua cifră, cât și pentru prezicerea unor ",
+              "combinații de cifre. Respectarea predicției acestei legi a ",
+              "fost observată atât în cazul trecerii prin toate valorile ale ",
+              "numărului de locuitori ai unei țări, cât și în cazul șirului ",
+              "lui Fibonacci și șirul puterilor lui 2.")
+      ),
+      tags$p(
+        paste(
+          "În jurul anului 1938, fizicianul **Frank Benford** a observat faptul ",
+          "ca tabelele logaritmice erau mai uzate în primele pagini față de ",
+          "ultimele. Acesta a testat ipoteza care susținea că cifrele mai mici ",
+          "au o frecvență de apariție mai mare decât cifrele mai mari pe 30 de ",
+          "seturi de date, obținând astfel legea. Folosindu-ne de Legea lui ",
+          "Benford putem face o predicție cu privire la distribuția cifrelor ",
+          "de la 1 la 9 la nivelul unui set de date. Probabilitatea apariției ",
+          "este generata astfel de această formulă:"
+        )
+      ),
+      withMathJax(
+        tags$p("$$P(D = d)=lg(1+\\frac{1}{d})\\ , unde \\ d\\in\\{1..9\\}$$")
+      )
+    ),
     tabPanel("Populația SUA",
              sidebarLayout(
                sidebarPanel(
@@ -28,10 +65,10 @@ ui <- fluidPage(
                    choiceValues = sapply(2010:2019, function(x) { paste("POPESTIMATE", x, sep="") })
                  ),
                  sliderInput(
-                   "n",
+                   "n1",
                    "Mărime de referință",
                    min = 0,
-                   max = 5000,
+                   max = 3193,
                    value = 2000
                  ),
                  
@@ -40,7 +77,7 @@ ui <- fluidPage(
                  tags$a(href = "https://www.kaggle.com/datasnaek/youtube-new?select=CAvideos.csv", "Kaggle.com-Trending YouTube Video Statistics (2019)")
                ),
                mainPanel(tabsetPanel(
-                 tabPanel("Grafic", plotOutput("date")),
+                 tabPanel("Grafic", plotOutput("date1")),
                  tabPanel("Vizualizare date tabel", DT::dataTableOutput("mytable1"))
                ))
              )),
@@ -58,7 +95,7 @@ ui <- fluidPage(
             "n2",
             "Mărime de referință",
             min = 0,
-            max = 60,
+            max = 57,
             value = 20
           ),
           hr(),
@@ -84,12 +121,12 @@ ui <- fluidPage(
                    "n3",
                    "Mărime de referință",
                    min = 0,
-                   max = 1000,
+                   max = 799,
                    value = 200
                  ),
                  hr(),
                  helpText("Sursă date:"),
-                 tags$a(href = "https://www.kaggle.com/datasnaek/youtube-new?select=CAvideos.csv", "Kaggle.com-Trending YouTube Video Statistics (2019)")
+                 tags$a(href = "https://www.kaggle.com/abcsds/pokemon", "kaggle - Pokemon with stats")
                ),
                mainPanel(tabsetPanel(
                  tabPanel("Grafic", plotOutput("date3")),
@@ -102,7 +139,7 @@ ui <- fluidPage(
                  radioButtons(
                    "column4",
                    "Alege domeniu:",
-                   choiceNames = c('Număr'),
+                   choiceNames = c('Număr apariții'),
                    choiceValues = c('Count')
                  ),
                  sliderInput(
@@ -115,13 +152,40 @@ ui <- fluidPage(
                  
                  hr(),
                  helpText("Sursă date:"),
-                 tags$a(href = "https://www.kaggle.com/datasnaek/youtube-new?select=CAvideos.csv", "Kaggle.com-Trending YouTube Video Statistics (2019)")
+                 tags$a(href = "https://www.kaggle.com/yamqwe/dog-names-over-timee", "kaggle - Dog Names over Time")
                ),
                mainPanel(tabsetPanel(
                  tabPanel("Grafic", plotOutput("date4")),
                  tabPanel("Vizualizare date tabel", DT::dataTableOutput("mytable4"))
                ))
-             ))
+             )),
+    tabPanel(
+      "Secvența Fibonacci",
+      sidebarLayout(
+        sidebarPanel(
+          radioButtons(
+            "column5",
+            "Alege domeniu:",
+            choiceNames = c("Valoare"),
+            choiceValues = c("Value")
+          ),
+          sliderInput(
+            "n5",
+            "Mărime de referință",
+            min = 0,
+            max = 1477,
+            value = 100
+          ),
+          hr(),
+          helpText("Sursă date:"),
+          tags$a(href = "https://www.kaggle.com/brandonconrady/fibonacci-sequence-first-10001-numbers", "kaggle - Fibonacci Sequence")
+        ),
+        mainPanel(tabsetPanel(
+          tabPanel("Grafic", plotOutput("date5")),
+          tabPanel("Vizualizare date table", DT::dataTableOutput("mytable5"))
+        ))
+      )
+    )
   )
 )
 
@@ -131,12 +195,12 @@ server <- function(session, input, output) {
   Benfords_law <- function(rate, number_of_lines)
   {
     firstDigit <- function(element) {
-      element = gsub('[0.]', '', element)
+      element <- gsub('[0.]', '', element)
       as.numeric(substr(element, 1, 1))
     }
     
     secondDigit <- function(element) {
-      element2 = gsub('[0.]', '', element)
+      element <- gsub('[0.]', '', element)
       as.numeric(substr(element, 2, 2))
     }
     
@@ -150,8 +214,8 @@ server <- function(session, input, output) {
     benford2 <- matrix (, 9, 10)
     
     for (i in 1:number_of_lines) {
-      first_digit = firstDigit(rate[i])
-      second_digit = secondDigit(rate[i])
+      first_digit <- firstDigit(rate[i])
+      second_digit <- secondDigit(rate[i])
       frequencies[first_digit] <- frequencies[first_digit] + 1
       frequencies2[first_digit, second_digit + 1] <-
         frequencies2[first_digit, second_digit + 1] + 1
@@ -167,7 +231,7 @@ server <- function(session, input, output) {
       
       # For 2 digits
       for (j in 1:10) {
-        procents2[i, j] = frequencies2[i, j] / total_frequencies2
+        procents2[i, j] <- frequencies2[i, j] / total_frequencies2
       }
     }
     
@@ -199,7 +263,7 @@ server <- function(session, input, output) {
 
     frame4 <- data.frame(perechi = numbers,
                          ben2 = c(t(benford2)),
-                         procente2 = c(t(procents2)))
+                         procente = c(t(procents2)))
     
     # Draw plots
     p1 <-
@@ -209,7 +273,7 @@ server <- function(session, input, output) {
                                                                    fill = "yellow") + geom_line(aes(y = ben), stat = "identity", color = "red")
     p2 <-
       ggplot(data = frame4, aes(x = perechi, group = 1)) + geom_bar(
-        aes(y = procente2),
+        aes(y = procente),
         stat = "identity",
         color = NA,
         fill = "yellow"
@@ -217,50 +281,23 @@ server <- function(session, input, output) {
     ggarrange(p1, p2, nrow = 2)
   }
   
+  renderDataset <- function(index, csvFile) {
+    output[[paste("date", index, sep="")]] <- renderPlot({
+      data <- read.csv(csvFile, header = TRUE)
+      output[[paste("mytable", index, sep="")]] <- DT::renderDataTable(data)
+      
+      rate <- data[[input[[paste("column", index, sep="")]]]]
+      rows <- input[[paste("n", index, sep="")]]
+      
+      Benfords_law(rate, rows)
+    })
+  }
   
-  output$date <- renderPlot({
-    data <- (read.csv("USpopulation.csv", header = TRUE))
-    
-    output$mytable1 = DT::renderDataTable(data)
-    
-    rate <- data[[input$column1]]
-    rows <- input$n
-
-    Benfords_law(rate, rows)
-  })
-  
-  output$date2 <- renderPlot({
-    data <- (read.csv("DB.csv", header = TRUE))
-    
-    output$mytable2 = DT::renderDataTable(data)
-
-    rate <- data[[input$column2]]
-    rows <- input$n2
-    
-    Benfords_law(rate, rows)
-  })
-  
-  output$date3 <- renderPlot({
-    data <- (read.csv("Pokemon.csv", header = TRUE))
-    
-    output$mytable3 = DT::renderDataTable(data)
-
-    rate <- data[[input$column3]]
-    rows <- input$n3
-    
-    Benfords_law(rate, rows)
-  })
-  
-  output$date4 <- renderPlot({
-    data <- (read.csv("DogsName.csv", header = TRUE))
-    
-    output$mytable4 = DT::renderDataTable(data)
-    
-    rate <- data[[input$column4]]
-    linii_coloana <- input$n4
-    
-    Benfords_law(rate, linii_coloana)
-  })
+  renderDataset(1, "USpopulation.csv")
+  renderDataset(2, "DB.csv")
+  renderDataset(3, "Pokemon.csv")
+  renderDataset(4, "DogsName.csv")
+  renderDataset(5, "fibonacci_sequence.csv")
 }
 
 shinyApp(ui = ui, server = server)
